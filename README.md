@@ -1,7 +1,7 @@
 # NFT-Project
 NFT Data Analysis
 
-The project consists of business questions (in an Excel spreadsheet), 26 SQL queries (used to create views), Power BI dashboards, and a presentation.
+The project consists of business questions (in an Excel spreadsheet), SQL queries (used to create views), Power BI dashboards, and a presentation.
 
 The dataset represents the activity of the Ethereum NFT market between April 1, 2021 - September 25, 2021.
 
@@ -24,7 +24,9 @@ The dataset contains 4 tables: Mints, Transfers, NFTs, ETH-USD.
 
 ## SQL Queries
 
-### 1. Mints Full
+### 1. Data Cleaning Queries
+
+#### Mints Full
 The query used for cleaning the Mints table:
 
 ```ruby
@@ -61,7 +63,7 @@ select
 FROM NFT_OPEN_SEA.RAW.MINTS;
 ```
 
-### 2. Transfers Full
+#### Transfers Full
 The query used for cleaning the Transfers table:
 
 ```ruby
@@ -98,7 +100,7 @@ select
 FROM NFT_OPEN_SEA.RAW.TRANSFERS;
 ```
 
-### 3. ETH_USD_VIEW
+#### ETH_USD_VIEW
 The query used for cleaning the ETH_USD table:
 
 ```ruby
@@ -124,7 +126,9 @@ FROM
     "NFT_OPEN_SEA"."RAW"."ETH-USD";
  ```
  
- ### 4. MINTS_VALUE
+ ### 2. What is the average and median values of the transactions (mints and transfers), and how are they distributed?
+ 
+ #### MINTS_VALUE
  Finding the average and median values of mint transactions:
  
  ```ruby
@@ -158,7 +162,7 @@ ON m."Z_DATE"=d."TICKER_DATE"
 group by n."NAME", n."SYMBOL";
 ```
 
- ### 5. TRANSFERS_VALUE
+ #### TRANSFERS_VALUE
  Finding the average and median values of transfer transactions:
  
  ```ruby
@@ -188,8 +192,9 @@ ON t."Z_DATE"=d."TICKER_DATE"
 group by date;
 ```
 
-### 6. MINTS_2_TRANSFER
- Finding the average and median duration between minting and selling an NFT (between the mint and transfer transaction):
+### 3. What is the average and median duration between minting and selling an NFT (between the mint and transfer transaction)?
+
+#### MINTS_2_TRANSFER
  
  ```ruby
  create or replace view NFT_OPEN_SEA.PUBLIC."mint_2_transfer1"(
@@ -204,8 +209,9 @@ SELECT
       ON m."TOKEN_ID"=t."TOKEN_ID" AND m."NFT_ADDRESS"=t."NFT_ADDRESS";
  ```
  
-### 7. NUM_TIMES_AN_NFT_SOLD
- Finding how many times a unique NFT was sold:
+### 4. How many times was a unique NFT sold?
+
+#### NUM_TIMES_AN_NFT_SOLD
  
  ```ruby 
 create or replace view NFT_OPEN_SEA.PUBLIC.NUM_TIMES_AN_NFT_SOLD
@@ -248,7 +254,10 @@ group by NFT_ID, "NAME", "SYMBOL"
 having  AVG_VALUE > 0;
 ```
 
-### 8. VALUE_DIFF_MINTS_2_TRANSFERS
+### 5. Was the NFT sold (by the minter or by the seller) at a profit or at a loss, and how much?
+
+#### VALUE_DIFF_MINTS_2_TRANSFERS
+
  Finding the profit (or loss) the minter gained in USD, for selling the NFT for the first time:
  
  ```ruby
@@ -290,7 +299,7 @@ CASE WHEN transfers_diff=0 THEN '0'
             WHERE m."TO_ADDRESS"=t."FROM_ADDRESS";
 ```
 
-### 9. TRANSFERS_VALUE_DIFF
+#### TRANSFERS_VALUE_DIFF
  Finding the profit (or loss) the NFT seller gained in USD:
  
  ```ruby
@@ -340,7 +349,7 @@ FROM
 group by "Z_DATE", NFT_ID, "NAME", "SYMBOL", v."END_VALUE", v."START_VALUE", v."DIFF_VALUE", "FROM_ADDRESS", "TO_ADDRESS";
 ```
 
-### 10. TRANSFERS_RETURN
+#### TRANSFERS_RETURN
  Finding the return the NFT seller gained (%):
  
  ```ruby
@@ -396,7 +405,7 @@ WHERE v."START_VALUE" IS NOT NULL AND v."START_VALUE"!=0
 group by "Z_DATE", NFT_ID, "NAME", "SYMBOL", v."END_VALUE", v."START_VALUE", v."DIFF_VALUE", "FROM_ADDRESS", "TO_ADDRESS", PERCENT_RETURN;
 ```
 
-### 11. TRANSFERS_VALUE_DIFF_TOP_10
+#### TRANSFERS_VALUE_DIFF_TOP_10
  Finding the top 10 profits gained in USD:
  
  ```ruby
@@ -448,7 +457,7 @@ FROM
 group by "Z_DATE", NFT_ID, "NAME", "SYMBOL", v."END_VALUE", v."START_VALUE", v."DIFF_VALUE", "FROM_ADDRESS", "TO_ADDRESS";
 ```
 
-### 12. TRANSFERS_VALUE_DIFF_BOTTOM_10
+#### TRANSFERS_VALUE_DIFF_BOTTOM_10
  Finding the bottom 10 profits (losses) gained in USD:
  
  ```ruby
@@ -500,7 +509,7 @@ FROM
 group by "Z_DATE", NFT_ID, "NAME", "SYMBOL", v."END_VALUE", v."START_VALUE", v."DIFF_VALUE", "FROM_ADDRESS", "TO_ADDRESS";
 ```
 
-### 13. TRANSFERS_VALUE_DIFF_BoredApeYachtClub
+#### TRANSFERS_VALUE_DIFF_BoredApeYachtClub
  Finding the profit (or loss) the seller gained in USD for a BoredApeYachtClub NFT:
  
  ```ruby
