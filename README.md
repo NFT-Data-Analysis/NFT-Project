@@ -3,6 +3,19 @@ NFT Data Analysis
 
 The project consists of business questions (in an Excel spreadsheet), 26 SQL queries (used to create views), Power BI dashboards, and a presentation.
 
+## Glossary
+
+| Term | Definition |
+|-------| ---------- |
+| NFT   | Non-fungible tokens (NFTs) are cryptographic assets on a blockchain with unique identification codes and metadata that distinguish them from each other. Unlike cryptocurrencies, they cannot be traded or exchanged at equivalency.|
+| OpenSea | An American online non-fungible token marketplace headquartered in New York City. Currently the largest NFT marketplace. |
+| Ethereum | A decentralized, open-source blockchain with smart contract functionality. Ether (ETH) is the cryptocurrency of Ethereum, and is used for buying and selling NFTs. |
+| Wei | Wei is the smallest denomination of Ether - the cryptocurrency coin used on the Ethereum network. One ether = 1,000,000,000,000,000,000 wei (10<sup>18</sup>). |
+| NFT Minting | Minting an NFT means converting digital data into crypto collections or digital assets recorded on the blockchain. The digital products or files are stored in a distributed ledger or decentralized database and cannot be edited, modified, or deleted. Each token minted has a unique identifier that is directly linked to one Ethereum address. There are usually fees associated with minting. |
+|Transfer events | Every time an NFT is transferred on the Ethereum blockchain, it emits a Transfer event which is stored on the blockchain. |
+
+
+
 ## SQL Queries
 
 ### 1. Mints Full
@@ -319,4 +332,215 @@ FROM
     is not null
 ) v
 group by "Z_DATE", NFT_ID, "NAME", "SYMBOL", v."END_VALUE", v."START_VALUE", v."DIFF_VALUE", "FROM_ADDRESS", "TO_ADDRESS";
+```
+
+### 10. TRANSFERS_RETURN
+ Finding the return the NFT seller gained (%):
+ 
+ ```ruby
+ create or replace view NFT_OPEN_SEA.PUBLIC.TRANSFERS_RETURN(
+	Z_DATE,
+	NFT_ID,
+	NAME,
+	SYMBOL,
+	FROM_ADDRESS,
+	TO_ADDRESS,
+	END_VALUE,
+	START_VALUE,
+	DIFF_VALUE,
+	PERCENT_RETURN
+) as
+SELECT
+    "Z_DATE",
+    NFT_ID,
+    "NAME",
+    "SYMBOL",
+    "FROM_ADDRESS",
+    "TO_ADDRESS",
+      v."END_VALUE",
+      v."START_VALUE",
+      v."DIFF_VALUE",
+      ROUND(((v."DIFF_VALUE"/v."START_VALUE"))*100,0) as PERCENT_RETURN
+
+FROM 
+(
+    SELECT 
+        Z_DATE,
+        CONCAT(t."TOKEN_ID", '||', t."NFT_ADDRESS") AS nft_id,
+        n."NAME",
+        n."SYMBOL",
+        t."FROM_ADDRESS",
+        t."TO_ADDRESS",
+        ROUND(((t."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) - lag(ROUND(((t."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2), 1, null) over (partition by CONCAT(t."TOKEN_ID", '||', t."NFT_ADDRESS") order by Z_DATE) as diff_value,
+        ROUND(((t."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) as end_value,
+        end_value-diff_value as start_value
+    FROM 
+       (SELECT * FROM "NFT_OPEN_SEA"."RAW"."NFTS") n
+        RIGHT JOIN
+        (SELECT * FROM "NFT_OPEN_SEA"."PUBLIC"."TRANSFERS_FULL") t
+            ON n."ADDRESS"=t."NFT_ADDRESS"
+        LEFT JOIN "NFT_OPEN_SEA"."PUBLIC"."ETH_USD_VIEW" AS d
+            ON t."Z_DATE"=d."TICKER_DATE"
+
+    qualify 
+    diff_value
+    is not null
+) v
+WHERE v."START_VALUE" IS NOT NULL AND v."START_VALUE"!=0
+group by "Z_DATE", NFT_ID, "NAME", "SYMBOL", v."END_VALUE", v."START_VALUE", v."DIFF_VALUE", "FROM_ADDRESS", "TO_ADDRESS", PERCENT_RETURN;
+```
+
+### 11. TRANSFERS_VALUE_DIFF_TOP_10
+ Finding the top 10 profits gained in USD:
+ 
+ ```ruby
+ create or replace view NFT_OPEN_SEA.PUBLIC.TRANSFERS_VALUE_DIFF_TOP_10
+as
+SELECT
+    "Z_DATE",
+    NFT_ID,
+    "NAME",
+    "SYMBOL",
+    "FROM_ADDRESS",
+    "TO_ADDRESS",
+      v."END_VALUE",
+      v."START_VALUE",
+      v."DIFF_VALUE",
+      CASE WHEN v."DIFF_VALUE"=0 THEN '0'
+     WHEN v."DIFF_VALUE" BETWEEN 0.01 AND 1000 THEN '1-1000'
+     WHEN v."DIFF_VALUE" BETWEEN -1000 AND -0.01 THEN '(-)1000-(-)1'
+     WHEN v."DIFF_VALUE" BETWEEN -2000 AND -1000.01 THEN '(-)2000-(-)1001'
+     WHEN v."DIFF_VALUE" BETWEEN 1000.01 AND 2000 THEN '1000-2000'
+     ELSE 'Other'
+     END AS diff_value_range
+FROM 
+(
+    SELECT 
+        Z_DATE,
+        CONCAT(t."TOKEN_ID", '||', t."NFT_ADDRESS") AS nft_id,
+        n."NAME",
+        n."SYMBOL",
+        t."FROM_ADDRESS",
+        t."TO_ADDRESS",
+       ROUND(((t."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) - lag(ROUND(((t."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2), 1, null) over (partition by CONCAT(t."TOKEN_ID", '||', t."NFT_ADDRESS") order by Z_DATE) as diff_value,
+        ROUND(((t."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) as end_value,
+        end_value-diff_value as start_value
+    FROM 
+       (SELECT * FROM "NFT_OPEN_SEA"."RAW"."NFTS") n
+        RIGHT JOIN
+        (SELECT * FROM "NFT_OPEN_SEA"."PUBLIC"."TRANSFERS_FULL" LIMIT) t
+            ON n."ADDRESS"=t."NFT_ADDRESS"
+        LEFT JOIN "NFT_OPEN_SEA"."PUBLIC"."ETH_USD_VIEW" AS d
+            ON t."Z_DATE"=d."TICKER_DATE"
+
+    qualify 
+    diff_value
+    is not null
+  ORDER BY diff_value DESC
+  LIMIT 10
+) v
+group by "Z_DATE", NFT_ID, "NAME", "SYMBOL", v."END_VALUE", v."START_VALUE", v."DIFF_VALUE", "FROM_ADDRESS", "TO_ADDRESS";
+```
+
+### 12. TRANSFERS_VALUE_DIFF_BOTTOM_10
+ Finding the bottom 10 profits (losses) gained in USD:
+ 
+ ```ruby
+ create or replace view NFT_OPEN_SEA.PUBLIC.TRANSFERS_VALUE_DIFF_BOTTOM_10
+as
+SELECT
+    "Z_DATE",
+    NFT_ID,
+    "NAME",
+    "SYMBOL",
+    "FROM_ADDRESS",
+    "TO_ADDRESS",
+      v."END_VALUE",
+      v."START_VALUE",
+      v."DIFF_VALUE",
+      CASE WHEN v."DIFF_VALUE"=0 THEN '0'
+     WHEN v."DIFF_VALUE" BETWEEN 0.01 AND 1000 THEN '1-1000'
+     WHEN v."DIFF_VALUE" BETWEEN -1000 AND -0.01 THEN '(-)1000-(-)1'
+     WHEN v."DIFF_VALUE" BETWEEN -2000 AND -1000.01 THEN '(-)2000-(-)1001'
+     WHEN v."DIFF_VALUE" BETWEEN 1000.01 AND 2000 THEN '1000-2000'
+     ELSE 'Other'
+     END AS diff_value_range
+FROM 
+(
+    SELECT 
+        Z_DATE,
+        CONCAT(t."TOKEN_ID", '||', t."NFT_ADDRESS") AS nft_id,
+        n."NAME",
+        n."SYMBOL",
+        t."FROM_ADDRESS",
+        t."TO_ADDRESS",
+       ROUND(((t."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) - lag(ROUND(((t."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2), 1, null) over (partition by CONCAT(t."TOKEN_ID", '||', t."NFT_ADDRESS") order by Z_DATE) as diff_value,
+        ROUND(((t."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) as end_value,
+        end_value-diff_value as start_value
+    FROM 
+       (SELECT * FROM "NFT_OPEN_SEA"."RAW"."NFTS") n
+        RIGHT JOIN
+        (SELECT * FROM "NFT_OPEN_SEA"."PUBLIC"."TRANSFERS_FULL" LIMIT) t
+            ON n."ADDRESS"=t."NFT_ADDRESS"
+        LEFT JOIN "NFT_OPEN_SEA"."PUBLIC"."ETH_USD_VIEW" AS d
+            ON t."Z_DATE"=d."TICKER_DATE"
+
+    qualify 
+    diff_value
+    is not null
+  ORDER BY diff_value ASC
+  LIMIT 10
+) v
+group by "Z_DATE", NFT_ID, "NAME", "SYMBOL", v."END_VALUE", v."START_VALUE", v."DIFF_VALUE", "FROM_ADDRESS", "TO_ADDRESS";
+```
+
+### 13. TRANSFERS_VALUE_DIFF_BoredApeYachtClub
+ Finding the profit (or loss) the seller gained in USD for a BoredApeYachtClub NFT:
+ 
+ ```ruby
+ create or replace view NFT_OPEN_SEA.PUBLIC.TRANSFERS_VALUE_DIFF_BoredApeYachtClub
+as
+SELECT
+    "Z_DATE",
+    NFT_ID,
+    "NAME",
+    "SYMBOL",
+    v."FROM_ADDRESS",
+    v."TO_ADDRESS",
+      v."END_VALUE",
+      v."START_VALUE",
+      v."DIFF_VALUE",
+      CASE WHEN v."DIFF_VALUE"=0 THEN '0'
+     WHEN v."DIFF_VALUE" BETWEEN 0.01 AND 1000 THEN '1-1000'
+     WHEN v."DIFF_VALUE" BETWEEN -1000 AND -0.01 THEN '(-)1000-(-)1'
+     WHEN v."DIFF_VALUE" BETWEEN -2000 AND -1000.01 THEN '(-)2000-(-)1001'
+     WHEN v."DIFF_VALUE" BETWEEN 1000.01 AND 2000 THEN '1000-2000'
+     WHEN v."DIFF_VALUE">2000 THEN 'ABOVE_2000'
+     WHEN v."DIFF_VALUE"<-2000 THEN 'BELOW_(-)2000'
+     END AS diff_value_range
+FROM 
+(
+    SELECT 
+        t.Z_DATE,
+        CONCAT(t."TOKEN_ID", '||', t."NFT_ADDRESS") AS nft_id,
+        n."NAME",
+        n."SYMBOL",
+        t."FROM_ADDRESS",
+        t."TO_ADDRESS",
+       ROUND(((t."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) - lag(ROUND(((t."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2), 1, null) over (partition by CONCAT(t."TOKEN_ID", '||', t."NFT_ADDRESS") order by t.Z_DATE) as diff_value,
+        ROUND(((t."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) as end_value,
+        end_value-diff_value as start_value
+    FROM 
+       (SELECT * FROM "NFT_OPEN_SEA"."RAW"."NFTS") n
+        RIGHT JOIN
+        (SELECT * FROM "NFT_OPEN_SEA"."PUBLIC"."TRANSFERS_FULL") t
+            ON n."ADDRESS"=t."NFT_ADDRESS"
+        LEFT JOIN "NFT_OPEN_SEA"."PUBLIC"."ETH_USD_VIEW" AS d
+            ON t."Z_DATE"=d."TICKER_DATE"
+  WHERE n."SYMBOL"='BAYC'
+    qualify 
+    diff_value
+    is not null
+) v
+group by "Z_DATE", NFT_ID, "NAME", "SYMBOL", v."END_VALUE", v."START_VALUE", v."DIFF_VALUE", v."FROM_ADDRESS", v."TO_ADDRESS"
 ```
