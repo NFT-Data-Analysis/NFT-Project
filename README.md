@@ -3,6 +3,12 @@ NFT Data Analysis
 
 The project consists of business questions (in an Excel spreadsheet), 26 SQL queries (used to create views), Power BI dashboards, and a presentation.
 
+The dataset represents the activity of the Ethereum NFT market between April 1, 2021 - September 25, 2021.
+
+The dataset contains 4 tables: Mints, Transfers, NFTs, ETH-USD.
+
+
+
 ## Glossary
 
 | Term | Definition |
