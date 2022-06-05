@@ -559,3 +559,229 @@ FROM
 ) v
 group by "Z_DATE", NFT_ID, "NAME", "SYMBOL", v."END_VALUE", v."START_VALUE", v."DIFF_VALUE", v."FROM_ADDRESS", v."TO_ADDRESS"
 ```
+
+### 6. What is the average and median duration between buying an NFT and reselling it (i.e. what is the average/ median holding time)?
+
+#### AVG_HOLDING_TIME
+
+```ruby
+create or replace view NFT_OPEN_SEA.PUBLIC.AVG_HOLDING_TIME as
+SELECT
+    NFT_ID,
+    "NAME",
+    "SYMBOL",
+    count(1) as transfers,
+    ROUND(avg(v."DIFF_TO_PREV"),2) as avg_diff,
+    median(v."DIFF_TO_PREV") as med_diff,
+    ROUND(avg(v."VALUE"),2) as avg_value,
+    sum(v."VALUE") as sum_value,
+    min(v."VALUE") as min_value,
+    max(v."VALUE") as max_value,
+    median(v."VALUE") as median_value,
+    CASE WHEN avg_diff BETWEEN 0 AND 10 THEN '0-10'
+         WHEN avg_diff BETWEEN 11 AND 30 THEN '11-30'
+         WHEN avg_diff BETWEEN 31 AND 50 THEN '31-50'
+         WHEN avg_diff BETWEEN 51 AND 70 THEN '51-70'
+         WHEN avg_diff BETWEEN 71 AND 90 THEN '71-90'
+         ELSE 'Other'
+     END AS avg_diff_range
+
+FROM 
+(
+    SELECT 
+        CONCAT(t."TOKEN_ID", '||', t."NFT_ADDRESS") AS nft_id,
+        n."NAME",
+        n."SYMBOL",
+        Z_DATE,
+        Z_DATE - lag(Z_DATE, 1, null) over (partition by CONCAT(t."TOKEN_ID", '||', t."NFT_ADDRESS") order by Z_DATE) as diff_to_prev ,
+        ROUND(((t."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) as value
+    FROM 
+       (SELECT * FROM "NFT_OPEN_SEA"."RAW"."NFTS") n
+        RIGHT JOIN
+        (SELECT * FROM "NFT_OPEN_SEA"."PUBLIC"."TRANSFERS_FULL") t
+            ON n."ADDRESS"=t."NFT_ADDRESS"
+        LEFT JOIN "NFT_OPEN_SEA"."PUBLIC"."ETH_USD_VIEW" AS d
+            ON t."Z_DATE"=d."TICKER_DATE"
+
+    qualify 
+    diff_to_prev
+    is not null
+) v
+group by NFT_ID, "NAME", "SYMBOL"
+having  AVG_VALUE > 0;
+```
+
+### 7. Which users (addresses) minted the most amount of NFTs (who are the "heavy" minters)?
+
+#### MINTS_BY_USER
+
+```ruby
+create or replace view NFT_OPEN_SEA.PUBLIC.MINTS_BY_USER
+as
+SELECT 
+    m."TO_ADDRESS",
+    n."NAME",
+    n."SYMBOL",
+    COUNT(m."TO_ADDRESS") AS total_mints,
+    ROUND(SUM((m."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) as sum_value,
+    ROUND(AVG((m."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) as avg_value,
+    ROUND(MEDIAN((m."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) AS med_value,
+    ROUND(MIN((m."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) as min_value,
+    ROUND(MAX((m."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) as max_value,
+    MAX(m."Z_DATE") - MIN(m."Z_DATE") as time_active,
+    CASE WHEN total_mints=1 THEN '1'
+         WHEN total_mints BETWEEN 2 AND 20 THEN '2-20'
+         WHEN total_mints BETWEEN 21 AND 40 THEN '21-40'
+         WHEN total_mints>40 THEN 'ABOVE_40'
+         END AS total_mints_range
+FROM "NFT_OPEN_SEA"."RAW"."NFTS" AS n
+RIGHT JOIN (SELECT * FROM "NFT_OPEN_SEA"."PUBLIC"."MINTS_FULL") AS m
+ON n."ADDRESS"=m."NFT_ADDRESS"
+LEFT JOIN "NFT_OPEN_SEA"."PUBLIC"."ETH_USD_VIEW" AS d
+ON m."Z_DATE"=d."TICKER_DATE"
+GROUP BY m."TO_ADDRESS", n."NAME", n."SYMBOL";
+```
+
+### 8. Which users (addresses) sold the most amount of NFTs (either minters or buyers)?
+
+#### SALES_BY_USER
+
+```ruby
+create or replace view NFT_OPEN_SEA.PUBLIC.SALES_BY_USER
+as
+SELECT 
+    t."FROM_ADDRESS", n."NAME", n."SYMBOL",
+    COUNT(t."FROM_ADDRESS") AS total_sellers,
+    COUNT(CASE WHEN t."FROM_ADDRESS"=t."TO_ADDRESS" THEN t."TO_ADDRESS" END) AS sellers_r_buyers, 
+    ROUND(SUM((t."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) as sum_value,
+    ROUND(AVG((t."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) as avg_value,
+    ROUND(MEDIAN((t."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) AS med_value,
+    ROUND(MIN((t."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) as min_value,
+    ROUND(MAX((t."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) as max_value,
+    MAX(t."Z_DATE") - MIN(t."Z_DATE") as time_active,
+    CASE WHEN total_sellers=1 THEN '1'
+         WHEN total_sellers BETWEEN 2 AND 20 THEN '2-20'
+         WHEN total_sellers BETWEEN 21 AND 40 THEN '21-40'
+         WHEN total_sellers>40 THEN 'ABOVE_40'
+         END AS total_sellers_range
+FROM "NFT_OPEN_SEA"."RAW"."NFTS" AS n
+RIGHT JOIN (SELECT * FROM "NFT_OPEN_SEA"."PUBLIC"."TRANSFERS_FULL") AS t
+ON n."ADDRESS"=t."NFT_ADDRESS"
+LEFT JOIN "NFT_OPEN_SEA"."PUBLIC"."ETH_USD_VIEW" AS d
+ON t."Z_DATE"=d."TICKER_DATE"
+GROUP BY t."FROM_ADDRESS", n."NAME", n."SYMBOL";
+```
+
+### 9. Which users (addresses) bought the most amount of NFTs (who are the "heavy" buyers?)?
+
+#### BUYS_BY_USER
+
+```ruby
+create or replace view NFT_OPEN_SEA.PUBLIC.BUYS_BY_USER
+as
+SELECT 
+    t."TO_ADDRESS",
+    n."NAME",
+    n."SYMBOL",
+    COUNT(t."TO_ADDRESS") AS total_buyers,
+    COUNT(CASE WHEN t."TO_ADDRESS"=t."FROM_ADDRESS" THEN t."FROM_ADDRESS" END) AS buyers_r_sellers, 
+    ROUND(SUM((t."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) as sum_value,
+    ROUND(AVG((t."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) as avg_value,
+    ROUND(MEDIAN((t."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) AS med_value,
+    ROUND(MIN((t."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) as min_value,
+    ROUND(MAX((t."TRANSACTION_VALUE"/POWER(10,18))*d."Close"),2) as max_value,
+    MAX(t."Z_DATE") - MIN(t."Z_DATE") as time_active,
+    CASE WHEN total_buyers=1 THEN '1'
+         WHEN total_buyers=2 THEN '2'
+         WHEN total_buyers=3 THEN '3'
+         WHEN total_buyers=4 THEN '4'
+         WHEN total_buyers=5 THEN '5'
+         ELSE 'Other'
+         END AS total_buyers_catagories
+FROM "NFT_OPEN_SEA"."RAW"."NFTS" AS n
+RIGHT JOIN (SELECT * FROM "NFT_OPEN_SEA"."PUBLIC"."TRANSFERS_FULL") AS t
+ON n."ADDRESS"=t."NFT_ADDRESS"
+LEFT JOIN "NFT_OPEN_SEA"."PUBLIC"."ETH_USD_VIEW" AS d
+ON t."Z_DATE"=d."TICKER_DATE"
+GROUP BY t."TO_ADDRESS", n."NAME", n."SYMBOL";
+```
+
+### 10. Is there a day of the week/ time of day in which more transactions occured (either mints or transfers)?
+
+#### mints_day_of_week
+
+```ruby
+create or replace view NFT_OPEN_SEA.PUBLIC."mints_day_of_week"(
+	DAY,
+	NUM_DAY
+) as
+SELECT *
+FROM
+(SELECT 
+       DAYNAME (t."Z_DATE") AS Day, COUNT (1) AS Num_Day
+       FROM "NFT_OPEN_SEA"."PUBLIC"."MINTS_FULL" AS t
+       GROUP BY Day
+       ORDER BY 
+       CASE Day
+          WHEN 'Sun' THEN 1
+          WHEN 'Mon' THEN 2
+          WHEN 'Tue' THEN 3
+          WHEN 'Wed' THEN 4
+          WHEN 'Thu' THEN 5
+          WHEN 'Fri' THEN 6
+          WHEN 'Sat' THEN 7
+       END ASC);
+ ```
+ 
+ #### MINTS_TIME_OF_DAY
+ 
+ ```ruby
+ create or replace view NFT_OPEN_SEA.PUBLIC.MINTS_TIME_OF_DAY(
+	TIME,
+	NUM_TIME
+) as
+SELECT 
+       HOUR (t."Z_TIME") AS TIME, COUNT (1) AS Num_Time
+       FROM "NFT_OPEN_SEA"."PUBLIC"."MINTS_FULL" AS t
+       GROUP BY TIME
+       ORDER BY TIME;
+```
+
+#### transfers_day_of_week
+
+```ruby
+create or replace view NFT_OPEN_SEA.PUBLIC."transfers_day_of_week"(
+	DAY,
+	NUM_DAY
+) as
+SELECT *
+FROM
+(SELECT 
+       DAYNAME (t."Z_DATE") AS Day, COUNT (1) AS Num_Day
+       FROM "NFT_OPEN_SEA"."PUBLIC"."TRANSFERS_FULL" AS t
+       GROUP BY Day
+       ORDER BY 
+       CASE Day
+          WHEN 'Sun' THEN 1
+          WHEN 'Mon' THEN 2
+          WHEN 'Tue' THEN 3
+          WHEN 'Wed' THEN 4
+          WHEN 'Thu' THEN 5
+          WHEN 'Fri' THEN 6
+          WHEN 'Sat' THEN 7
+       END ASC);
+ ```
+ 
+ #### TRANSFERS_TIME_OF_DAY
+ 
+ ```ruby
+ create or replace view NFT_OPEN_SEA.PUBLIC.TRANSFERS_TIME_OF_DAY(
+	TIME,
+	NUM_TIME
+) as
+SELECT 
+       HOUR (t."Z_TIME") AS TIME, COUNT (1) AS Num_Time
+       FROM "NFT_OPEN_SEA"."PUBLIC"."TRANSFERS_FULL" AS t
+       GROUP BY TIME
+       ORDER BY TIME;
+ ```
