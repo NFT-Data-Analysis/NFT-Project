@@ -42,7 +42,7 @@ Team members:
 #### Mints Full
 The query used for cleaning the Mints table:
 
-```ruby
+```sql
 create or replace view NFT_OPEN_SEA.PUBLIC.MINTS_FULL(
 	EVENT_ID,
 	TRANSACTION_HASH,
@@ -79,7 +79,7 @@ FROM NFT_OPEN_SEA.RAW.MINTS;
 #### Transfers Full
 The query used for cleaning the Transfers table:
 
-```ruby
+```sql
 create or replace view NFT_OPEN_SEA.PUBLIC.TRANSFERS_FULL(
 	EVENT_ID,
 	TRANSACTION_HASH,
@@ -116,7 +116,7 @@ FROM NFT_OPEN_SEA.RAW.TRANSFERS;
 #### ETH_USD_VIEW
 The query used for cleaning the ETH_USD table:
 
-```ruby
+```sql
 create or replace view NFT_OPEN_SEA.PUBLIC.ETH_USD_VIEW(
 	TICKER_DATE,
 	"Open",
@@ -144,7 +144,7 @@ FROM
  #### MINTS_VALUE
  Finding the average and median values of mint transactions:
  
- ```ruby
+ ```sql
  create or replace view NFT_OPEN_SEA.PUBLIC.MINTS_VALUE(
 	NAME,
 	SYMBOL,
@@ -178,7 +178,7 @@ group by n."NAME", n."SYMBOL";
  #### TRANSFERS_VALUE
  Finding the average and median values of transfer transactions:
  
- ```ruby
+ ```sql
  create or replace view NFT_OPEN_SEA.PUBLIC.TRANSFERS_VALUE(
 	DATE,
 	EVENTS,
@@ -209,7 +209,7 @@ group by date;
 
 #### MINTS_2_TRANSFER
  
- ```ruby
+ ```sql
  create or replace view NFT_OPEN_SEA.PUBLIC."mint_2_transfer1"(
 	AVG_DATEDIFF_MINT_SALE,
 	MED_DATEDIFF_MINT_SALE
@@ -226,7 +226,7 @@ SELECT
 
 #### NUM_TIMES_AN_NFT_SOLD
  
- ```ruby 
+ ```sql 
 create or replace view NFT_OPEN_SEA.PUBLIC.NUM_TIMES_AN_NFT_SOLD
 as
 SELECT
@@ -273,7 +273,7 @@ having  AVG_VALUE > 0;
 
  Finding the profit (or loss) the minter gained in USD, for selling the NFT for the first time:
  
- ```ruby
+ ```sql
  create or replace view NFT_OPEN_SEA.PUBLIC.VALUE_DIFF_MINTS_2_TRANSFERS(
 	TRANSFERS_NFT_ID,
 	MINTS_NFT_ID,
@@ -315,7 +315,7 @@ CASE WHEN transfers_diff=0 THEN '0'
 #### TRANSFERS_VALUE_DIFF
  Finding the profit (or loss) the NFT seller gained in USD:
  
- ```ruby
+ ```sql
  create or replace view NFT_OPEN_SEA.PUBLIC.TRANSFERS_VALUE_DIFF
 as
 SELECT
@@ -365,7 +365,7 @@ group by "Z_DATE", NFT_ID, "NAME", "SYMBOL", v."END_VALUE", v."START_VALUE", v."
 #### TRANSFERS_RETURN
  Finding the return the NFT seller gained (%):
  
- ```ruby
+ ```sql
  create or replace view NFT_OPEN_SEA.PUBLIC.TRANSFERS_RETURN(
 	Z_DATE,
 	NFT_ID,
@@ -421,7 +421,7 @@ group by "Z_DATE", NFT_ID, "NAME", "SYMBOL", v."END_VALUE", v."START_VALUE", v."
 #### TRANSFERS_VALUE_DIFF_TOP_10
  Finding the top 10 profits gained in USD:
  
- ```ruby
+ ```sql
  create or replace view NFT_OPEN_SEA.PUBLIC.TRANSFERS_VALUE_DIFF_TOP_10
 as
 SELECT
@@ -473,7 +473,7 @@ group by "Z_DATE", NFT_ID, "NAME", "SYMBOL", v."END_VALUE", v."START_VALUE", v."
 #### TRANSFERS_VALUE_DIFF_BOTTOM_10
  Finding the bottom 10 profits (losses) gained in USD:
  
- ```ruby
+ ```sql
  create or replace view NFT_OPEN_SEA.PUBLIC.TRANSFERS_VALUE_DIFF_BOTTOM_10
 as
 SELECT
@@ -525,7 +525,7 @@ group by "Z_DATE", NFT_ID, "NAME", "SYMBOL", v."END_VALUE", v."START_VALUE", v."
 #### TRANSFERS_VALUE_DIFF_BoredApeYachtClub
  Finding the profit (or loss) the seller gained in USD for a BoredApeYachtClub NFT:
  
- ```ruby
+ ```sql
  create or replace view NFT_OPEN_SEA.PUBLIC.TRANSFERS_VALUE_DIFF_BoredApeYachtClub
 as
 SELECT
@@ -577,7 +577,7 @@ group by "Z_DATE", NFT_ID, "NAME", "SYMBOL", v."END_VALUE", v."START_VALUE", v."
 
 #### AVG_HOLDING_TIME
 
-```ruby
+```sql
 create or replace view NFT_OPEN_SEA.PUBLIC.AVG_HOLDING_TIME as
 SELECT
     NFT_ID,
@@ -628,7 +628,7 @@ having  AVG_VALUE > 0;
 
 #### MINTS_BY_USER
 
-```ruby
+```sql
 create or replace view NFT_OPEN_SEA.PUBLIC.MINTS_BY_USER
 as
 SELECT 
@@ -659,7 +659,7 @@ GROUP BY m."TO_ADDRESS", n."NAME", n."SYMBOL";
 
 #### SALES_BY_USER
 
-```ruby
+```sql
 create or replace view NFT_OPEN_SEA.PUBLIC.SALES_BY_USER
 as
 SELECT 
@@ -689,7 +689,7 @@ GROUP BY t."FROM_ADDRESS", n."NAME", n."SYMBOL";
 
 #### BUYS_BY_USER
 
-```ruby
+```sql
 create or replace view NFT_OPEN_SEA.PUBLIC.BUYS_BY_USER
 as
 SELECT 
@@ -723,7 +723,7 @@ GROUP BY t."TO_ADDRESS", n."NAME", n."SYMBOL";
 
 #### mints_day_of_week
 
-```ruby
+```sql
 create or replace view NFT_OPEN_SEA.PUBLIC."mints_day_of_week"(
 	DAY,
 	NUM_DAY
@@ -748,7 +748,7 @@ FROM
  
  #### MINTS_TIME_OF_DAY
  
- ```ruby
+ ```sql
  create or replace view NFT_OPEN_SEA.PUBLIC.MINTS_TIME_OF_DAY(
 	TIME,
 	NUM_TIME
@@ -762,7 +762,7 @@ SELECT
 
 #### transfers_day_of_week
 
-```ruby
+```sql
 create or replace view NFT_OPEN_SEA.PUBLIC."transfers_day_of_week"(
 	DAY,
 	NUM_DAY
@@ -787,7 +787,7 @@ FROM
  
  #### TRANSFERS_TIME_OF_DAY
  
- ```ruby
+ ```sql
  create or replace view NFT_OPEN_SEA.PUBLIC.TRANSFERS_TIME_OF_DAY(
 	TIME,
 	NUM_TIME
@@ -798,3 +798,4 @@ SELECT
        GROUP BY TIME
        ORDER BY TIME;
  ```
+
