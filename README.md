@@ -4,24 +4,26 @@ NFT Data Analysis
 
 A collaboration project in which we analyzed a large dataset of NFT transactions using SQL, Snowflake and Power BI, and produced actionable insights.
 
-The project consists of business questions (in an Excel spreadsheet), SQL queries (used to create views), Power BI dashboards, and a presentation.
+The project consists of business questions (in an Excel spreadsheet), SQL queries (used to create views), Power BI report, and a presentation.
 
 The dataset represents the activity of the Ethereum NFT market between April 1, 2021 - September 25, 2021.
 
 The dataset contains 4 tables: Mints, Transfers, NFTs, ETH-USD.
 
-Link to the Power BI dashboards: https://app.powerbi.com/view?r=eyJrIjoiMzYwM2I0M2YtYjg3Ny00MWU5LWI0OWEtZWZiNGUzZTlhYjZmIiwidCI6IjMyMTc0NmM2LTQwMzQtNGZjYy1hZDczLTk4NjdlYTRmNGNiMiIsImMiOjl9
+[Link to the Power BI report](https://app.powerbi.com/view?r=eyJrIjoiMzYwM2I0M2YtYjg3Ny00MWU5LWI0OWEtZWZiNGUzZTlhYjZmIiwidCI6IjMyMTc0NmM2LTQwMzQtNGZjYy1hZDczLTk4NjdlYTRmNGNiMiIsImMiOjl9)
+
+[Link to the Power BI file](https://drive.google.com/file/d/1cOJTix6xpN6E1PjTTvJdpvWACHsEYuNF/view?usp=sharing)
 
 
 ## The Team
 
-Team leader: Ziva Grushka-Enav https://www.linkedin.com/in/zivag/
+Team leader: [Ziva Grushka-Enav](https://www.linkedin.com/in/zivag/)
 
 Team members:
 
-- Meital Shemer https://www.linkedin.com/in/meital-shemer/
+- [Meital Shemer](https://www.linkedin.com/in/meital-shemer/)
 
-- Eli Hirsch https://www.linkedin.com/in/eli-b-hirsch/
+- [Eli Hirsch](https://www.linkedin.com/in/eli-b-hirsch/)
 
 
 ## Glossary
