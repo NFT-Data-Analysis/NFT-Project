@@ -10,6 +10,8 @@ The dataset represents the activity of the Ethereum NFT market between April 1, 
 
 The dataset contains 4 tables: Mints, Transfers, NFTs, ETH-USD.
 
+Link to the Power BI dashboards: https://app.powerbi.com/view?r=eyJrIjoiMzYwM2I0M2YtYjg3Ny00MWU5LWI0OWEtZWZiNGUzZTlhYjZmIiwidCI6IjMyMTc0NmM2LTQwMzQtNGZjYy1hZDczLTk4NjdlYTRmNGNiMiIsImMiOjl9
+
 
 ## The Team
 
