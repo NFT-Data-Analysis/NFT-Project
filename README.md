@@ -10,7 +10,7 @@ The dataset represents the activity of the Ethereum NFT market between April 1, 
 
 The dataset contains 4 tables: Mints, Transfers, NFTs, ETH-USD.
 
-[Link to the Power BI report](https://app.powerbi.com/view?r=eyJrIjoiMzYwM2I0M2YtYjg3Ny00MWU5LWI0OWEtZWZiNGUzZTlhYjZmIiwidCI6IjMyMTc0NmM2LTQwMzQtNGZjYy1hZDczLTk4NjdlYTRmNGNiMiIsImMiOjl9)
+[Link to the web Power BI Report](https://app.powerbi.com/view?r=eyJrIjoiMzYwM2I0M2YtYjg3Ny00MWU5LWI0OWEtZWZiNGUzZTlhYjZmIiwidCI6IjMyMTc0NmM2LTQwMzQtNGZjYy1hZDczLTk4NjdlYTRmNGNiMiIsImMiOjl9)
 
 [Link to the Power BI file](https://drive.google.com/file/d/1cOJTix6xpN6E1PjTTvJdpvWACHsEYuNF/view?usp=sharing)
 
@@ -39,7 +39,7 @@ Team members:
 
 
 
-## SQL Queries
+## SQL Queries, Insights and Visualization
 
 ### 1. Data Cleaning Queries
 
@@ -179,6 +179,16 @@ ON m."Z_DATE"=d."TICKER_DATE"
 group by n."NAME", n."SYMBOL";
 ```
 
+**The cost of minting an NFT is largely overlooked by the minter. It is important to take the minting cost into account, so you can set a profitable selling price.**
+
+**NFT marketplaces (such as OpenSea) can also use this information, for setting fees.**
+
+![image](https://user-images.githubusercontent.com/106432989/174639551-1bb6d9ee-04c5-4a87-980b-f879183cde92.png)
+
+![image](https://user-images.githubusercontent.com/106432989/174639583-36c2d5f3-ee3d-45c0-92c2-06b1062db91a.png)
+
+
+
  #### TRANSFERS_VALUE
  Finding the average and median values of transfer transactions:
  
@@ -208,6 +218,17 @@ ON t."Z_DATE"=d."TICKER_DATE"
        
 group by date;
 ```
+
+**Minters should be interested in the transfer transaction value in order to estimate the potential selling price.**
+
+**NFT marketplaces (such as OpenSea) can also use this information, for setting fees.**
+
+![image](https://user-images.githubusercontent.com/106432989/174641824-cd0c6a06-592c-4885-938f-e44127d73601.png)
+
+![image](https://user-images.githubusercontent.com/106432989/174641866-e7da34c5-c1a1-4e45-be7b-47bd403bc0a3.png)
+
+
+
 
 ### 3. What is the average and median duration between minting and selling an NFT (between the mint and transfer transaction)?
 
