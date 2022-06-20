@@ -670,7 +670,7 @@ group by NFT_ID, "NAME", "SYMBOL"
 having  AVG_VALUE > 0;
 ```
 
-### 7. Which users (addresses) minted the most amount of NFTs (who are the "heavy" minters)?
+### 7. Which users (addresses) minted the most amount of NFTs (who are the high voume minters)?
 
 #### MINTS_BY_USER
 
@@ -731,7 +731,7 @@ ON t."Z_DATE"=d."TICKER_DATE"
 GROUP BY t."FROM_ADDRESS", n."NAME", n."SYMBOL";
 ```
 
-### 9. Which users (addresses) bought the most amount of NFTs (who are the "heavy" buyers?)?
+### 9. Which users (addresses) bought the most amount of NFTs (who are the high voume buyers?)?
 
 #### BUYS_BY_USER
 
