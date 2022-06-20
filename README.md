@@ -179,11 +179,11 @@ ON m."Z_DATE"=d."TICKER_DATE"
 group by n."NAME", n."SYMBOL";
 ```
 
-**The cost of minting an NFT is largely overlooked by the minter. It is important to take the minting cost into account, so you can set a profitable selling price.**
+![image](https://user-images.githubusercontent.com/106432989/174639551-1bb6d9ee-04c5-4a87-980b-f879183cde92.png)
+
+**The cost of minting an NFT is largely overlooked by minters. It is important to take the minting cost into account, so you can set a profitable selling price.**
 
 **NFT marketplaces (such as OpenSea) can also use this information, for setting fees.**
-
-![image](https://user-images.githubusercontent.com/106432989/174639551-1bb6d9ee-04c5-4a87-980b-f879183cde92.png)
 
 ![image](https://user-images.githubusercontent.com/106432989/174639583-36c2d5f3-ee3d-45c0-92c2-06b1062db91a.png)
 
@@ -219,14 +219,20 @@ ON t."Z_DATE"=d."TICKER_DATE"
 group by date;
 ```
 
+
+![image](https://user-images.githubusercontent.com/106432989/174641824-cd0c6a06-592c-4885-938f-e44127d73601.png)
+
 **Minters should be interested in the transfer transaction value in order to estimate the potential selling price.**
 
 **NFT marketplaces (such as OpenSea) can also use this information, for setting fees.**
 
-![image](https://user-images.githubusercontent.com/106432989/174641824-cd0c6a06-592c-4885-938f-e44127d73601.png)
-
 ![image](https://user-images.githubusercontent.com/106432989/174641866-e7da34c5-c1a1-4e45-be7b-47bd403bc0a3.png)
 
+As for the distribution of transactions value, you can see that up until August 20, 2021, the value of transfer transactions didn't exceed 2,000$.
+
+From August 20, 2021 to September 3, 2021, the value of transfer transactions was between 2,000 to around 3,500 USD.
+
+From September 4, 2021 to September 25, 2021 (the end of our data), the value of transfer transactions is less than 1,800$
 
 
 
@@ -246,6 +252,11 @@ SELECT
       LEFT JOIN (SELECT * FROM "NFT_OPEN_SEA"."PUBLIC"."TRANSFERS_FULL") t
       ON m."TOKEN_ID"=t."TOKEN_ID" AND m."NFT_ADDRESS"=t."NFT_ADDRESS";
  ```
+ 
+ ![image](https://user-images.githubusercontent.com/106432989/174647983-230dafe6-0f8d-4785-9f10-7c3ac489e873.png)
+ 
+ **Minters can expect to sell the NFT in a very short time after minting.**
+
  
 ### 4. How many times was a unique NFT sold?
 
@@ -291,6 +302,9 @@ FROM
 group by NFT_ID, "NAME", "SYMBOL"
 having  AVG_VALUE > 0;
 ```
+
+![image](https://user-images.githubusercontent.com/106432989/174648619-c645f5e7-dfe5-40d3-bc8c-ee0618b7c910.png)
+
 
 ### 5. Was the NFT sold (by the minter or by the seller) at a profit or at a loss, and how much?
 
