@@ -351,6 +351,9 @@ CASE WHEN transfers_diff=0 THEN '0'
             WHERE m."TO_ADDRESS"=t."FROM_ADDRESS";
 ```
 
+![image](https://user-images.githubusercontent.com/106432989/174671929-c38c1777-0708-451c-85f5-e3d1c35eef76.png)
+
+
 #### TRANSFERS_VALUE_DIFF
  Finding the profit (or loss) the NFT seller gained in USD:
  
@@ -400,6 +403,9 @@ FROM
 ) v
 group by "Z_DATE", NFT_ID, "NAME", "SYMBOL", v."END_VALUE", v."START_VALUE", v."DIFF_VALUE", "FROM_ADDRESS", "TO_ADDRESS";
 ```
+
+![image](https://user-images.githubusercontent.com/106432989/174675213-992292b7-7af9-4934-a14b-61eeed52d2fc.png)
+
 
 #### TRANSFERS_RETURN
  Finding the return the NFT seller gained (%):
@@ -456,6 +462,7 @@ FROM
 WHERE v."START_VALUE" IS NOT NULL AND v."START_VALUE"!=0
 group by "Z_DATE", NFT_ID, "NAME", "SYMBOL", v."END_VALUE", v."START_VALUE", v."DIFF_VALUE", "FROM_ADDRESS", "TO_ADDRESS", PERCENT_RETURN;
 ```
+
 
 #### TRANSFERS_VALUE_DIFF_TOP_10
  Finding the top 10 profits gained in USD:
