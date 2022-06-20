@@ -228,11 +228,11 @@ group by date;
 
 ![image](https://user-images.githubusercontent.com/106432989/174641866-e7da34c5-c1a1-4e45-be7b-47bd403bc0a3.png)
 
-As for the distribution of transactions value, you can see that up until August 20, 2021, the value of transfer transactions didn't exceed 2,000$.
+**As for the distribution of transactions value, you can see that up until August 20, 2021, the value of transfer transactions didn't exceed 2,000$.**
 
-From August 20, 2021 to September 3, 2021, the value of transfer transactions was between 2,000 to around 3,500 USD.
+**From August 20, 2021 to September 3, 2021, the value of transfer transactions was between 2,000 to around 3,500 USD.**
 
-From September 4, 2021 to September 25, 2021 (the end of our data), the value of transfer transactions is less than 1,800$
+**From September 4, 2021 to September 25, 2021 (the end of our data), the value of transfer transactions is less than 1,800$.**
 
 
 
