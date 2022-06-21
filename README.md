@@ -466,6 +466,8 @@ WHERE v."START_VALUE" IS NOT NULL AND v."START_VALUE"!=0
 group by "Z_DATE", NFT_ID, "NAME", "SYMBOL", v."END_VALUE", v."START_VALUE", v."DIFF_VALUE", "FROM_ADDRESS", "TO_ADDRESS", PERCENT_RETURN;
 ```
 
+![image](https://user-images.githubusercontent.com/106432989/174875940-3a9373b8-32fb-429e-85cc-98023fb2c5b8.png)
+
 
 #### TRANSFERS_VALUE_DIFF_TOP_10
  Finding the top 10 profits gained in USD:
@@ -519,6 +521,9 @@ FROM
 group by "Z_DATE", NFT_ID, "NAME", "SYMBOL", v."END_VALUE", v."START_VALUE", v."DIFF_VALUE", "FROM_ADDRESS", "TO_ADDRESS";
 ```
 
+![image](https://user-images.githubusercontent.com/106432989/174876725-ea3acf53-83e6-43ff-8b6b-4c67f78a6ed9.png)
+
+
 #### TRANSFERS_VALUE_DIFF_BOTTOM_10
  Finding the bottom 10 profits (losses) gained in USD:
  
@@ -571,6 +576,8 @@ FROM
 group by "Z_DATE", NFT_ID, "NAME", "SYMBOL", v."END_VALUE", v."START_VALUE", v."DIFF_VALUE", "FROM_ADDRESS", "TO_ADDRESS";
 ```
 
+![image](https://user-images.githubusercontent.com/106432989/174880547-645f45c0-e0c3-45ef-9c5f-f4b7ffa8aa40.png)
+
 #### TRANSFERS_VALUE_DIFF_BoredApeYachtClub
  Finding the profit (or loss) the seller gained in USD for a BoredApeYachtClub NFT:
  
@@ -622,6 +629,10 @@ FROM
 group by "Z_DATE", NFT_ID, "NAME", "SYMBOL", v."END_VALUE", v."START_VALUE", v."DIFF_VALUE", v."FROM_ADDRESS", v."TO_ADDRESS"
 ```
 
+![image](https://user-images.githubusercontent.com/106432989/174882088-3122c868-6def-4482-9f12-0a2883e5e895.png)
+
+![image](https://user-images.githubusercontent.com/106432989/174882232-4fd56e67-81d0-4828-b464-873122593b75.png)
+
 ### 6. What is the average and median duration between buying an NFT and reselling it (i.e. what is the average/ median holding time)?
 
 #### AVG_HOLDING_TIME
@@ -672,6 +683,14 @@ FROM
 group by NFT_ID, "NAME", "SYMBOL"
 having  AVG_VALUE > 0;
 ```
+
+![image](https://user-images.githubusercontent.com/106432989/174891221-ac3db2d3-b018-4f8d-bdf6-0ae73bf80089.png)
+
+**The median holding time is around 10 days, which seem to contradict our findings regarding the number of times unique NFTs are sold (once, in the majority of cases, and an average of 1.65 times).**
+
+**A possible explanation to this contradiction is that we found a huge spike in the volume of transfer transactions towards the end of our dataset, which might be skewing the median holding time downwards.**
+
+![image](https://user-images.githubusercontent.com/106432989/174891568-1f49c8bc-081a-4cd7-8697-492d8b62fda0.png)
 
 ### 7. Which users (addresses) minted the most amount of NFTs (who are the high voume minters)?
 
