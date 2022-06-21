@@ -406,6 +406,9 @@ group by "Z_DATE", NFT_ID, "NAME", "SYMBOL", v."END_VALUE", v."START_VALUE", v."
 
 ![image](https://user-images.githubusercontent.com/106432989/174675213-992292b7-7af9-4934-a14b-61eeed52d2fc.png)
 
+![image](https://user-images.githubusercontent.com/106432989/174713944-c1078f86-3e4b-4e6c-b04e-597d6d8f85c3.png)
+
+
 
 #### TRANSFERS_RETURN
  Finding the return the NFT seller gained (%):
