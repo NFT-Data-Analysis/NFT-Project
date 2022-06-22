@@ -408,7 +408,7 @@ group by "Z_DATE", NFT_ID, "NAME", "SYMBOL", v."END_VALUE", v."START_VALUE", v."
 
 ![image](https://user-images.githubusercontent.com/106432989/174713944-c1078f86-3e4b-4e6c-b04e-597d6d8f85c3.png)
 
-
+**Regulatory Authorities (Tax Authority, AML Authority, etc.) should monitor the profits being made and enforce taxes in accordance with tax policies and treaties.**
 
 #### TRANSFERS_RETURN
  Finding the return the NFT seller gained (%):
@@ -759,6 +759,15 @@ ON t."Z_DATE"=d."TICKER_DATE"
 GROUP BY t."FROM_ADDRESS", n."NAME", n."SYMBOL";
 ```
 
+![image](https://user-images.githubusercontent.com/106432989/175104791-303e4596-ba37-48d1-92d6-69190cacb4b5.png)
+
+**Around 56% of users only sold 1 NFT, and around 40% of users sold 2 to 20 NFTS, with a minority of users who sold more than 20 NFTs.**
+
+**NFT marketplaces (such as OpenSea), Can offer discounts, special deals, promotions etc. to the high volume (VIP) sellers, and should also consider offers to encorage sellers to sell more NFTs.**
+
+**Regulatory Authorities (Tax Authority, AML Authority, etc.) should monitor the high volume sellers and check if they paid the required taxes, if they're laundering money, etc.**
+
+
 ### 9. Which users (addresses) bought the most amount of NFTs (who are the high voume buyers?)?
 
 #### BUYS_BY_USER
@@ -792,6 +801,14 @@ LEFT JOIN "NFT_OPEN_SEA"."PUBLIC"."ETH_USD_VIEW" AS d
 ON t."Z_DATE"=d."TICKER_DATE"
 GROUP BY t."TO_ADDRESS", n."NAME", n."SYMBOL";
 ```
+
+![image](https://user-images.githubusercontent.com/106432989/175105671-16e93ab6-8548-44ac-bccd-86c316be9754.png)
+
+**Most users bought 1 NFT, and up to 5 NFTs.**
+
+**NFT marketplaces (such as OpenSea) should check why users are only one-time buyers and what would make them buy more (survey, A/B testing etc.).**
+
+**Regulatory Authorities (Tax Authority, AML Authority, OpenSea etc.) should monitor the high volume buyers and check the legitamacy of the transactions (that the accounts are real, the transaction makes economic sense, etc.).**
 
 ### 10. Is there a day of the week/ time of day in which more transactions occured (either mints or transfers)?
 
@@ -873,3 +890,16 @@ SELECT
        ORDER BY TIME;
  ```
 
+ ![image](https://user-images.githubusercontent.com/106432989/175106869-9dd93fda-49d2-421a-9936-962cb88588f6.png)
+ 
+* **Most mints occured on Friday.**
+* **Most transfer transactions occured on Sunday.**
+
+![image](https://user-images.githubusercontent.com/106432989/175107459-bccd4c28-e3e7-41c5-a62a-e40ace400992.png)
+
+**Both mints' and transfers' strongest hour of the day is 22:00.**
+
+**NFT marketplaces (such as OpenSea) can come up with special deals on other days of the week/ times of day to incentivize more transactions.**
+
+**Minters or other sellers can put the NFT on sale on the most popular day of the week and/ or time of day for transfer transactions in order to attract as many potential buyers as possible.**
+ 
