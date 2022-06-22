@@ -723,6 +723,12 @@ ON m."Z_DATE"=d."TICKER_DATE"
 GROUP BY m."TO_ADDRESS", n."NAME", n."SYMBOL";
 ```
 
+![image](https://user-images.githubusercontent.com/106432989/174941232-c2927880-025b-4126-a4b3-b4969fcdcf25.png)
+
+**Nearly 60% of users only minted 1 NFT, and around 40% of users minted 2 to 20 NFTS, with a minority of users who minted more than 20 NFTs.**
+
+**NFT marketplaces (such as OpenSea) Can offer discounts, special deals, promotions etc. to the high volume (VIP) minters, and should also consider giving an incentive for minting more than 20 NFTs.**
+
 ### 8. Which users (addresses) sold the most amount of NFTs (either minters or buyers)?
 
 #### SALES_BY_USER
