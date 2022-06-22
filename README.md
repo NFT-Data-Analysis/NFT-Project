@@ -692,7 +692,7 @@ having  AVG_VALUE > 0;
 
 ![image](https://user-images.githubusercontent.com/106432989/174891568-1f49c8bc-081a-4cd7-8697-492d8b62fda0.png)
 
-### 7. Which users (addresses) minted the most amount of NFTs (who are the high voume minters)?
+### 7. Which users (addresses) minted the most amount of NFTs (who are the high volume minters)?
 
 #### MINTS_BY_USER
 
@@ -768,7 +768,7 @@ GROUP BY t."FROM_ADDRESS", n."NAME", n."SYMBOL";
 **Regulatory Authorities (Tax Authority, AML Authority, etc.) should monitor the high volume sellers and check if they paid the required taxes, if they're laundering money, etc.**
 
 
-### 9. Which users (addresses) bought the most amount of NFTs (who are the high voume buyers?)?
+### 9. Which users (addresses) bought the most amount of NFTs (who are the high volume buyers?)?
 
 #### BUYS_BY_USER
 
